@@ -2,15 +2,18 @@
   <div>
     <Header/>
     <div class="container">
-      <Charlas/>
-      <Sidebar/>
+      <Charlas v-if="estaLoggeado" />
+      <LandingPage v-else />
+      <Sidebar v-if="estaLoggeado"/>
     </div>
   </div>
 </template>
 
 <script>
+
 // @ is an alias to /src
 import Charlas from '@/components/Charlas.vue'
+import LandingPage from '@/components/LandingPage.vue'
 import Header from '@/components/Header.vue'
 import Sidebar from '@/components/Sidebar.vue'
 
@@ -19,7 +22,26 @@ export default {
   components: {
     Charlas,
     Header,
-    Sidebar
+    Sidebar,
+    LandingPage
+  },
+  data () {
+    return {
+      datos: null
+    }
+  },
+  updated () {
+    eventBus.$on('newuser', () => {
+      this.isLoggedUser = true;
+    });
+  },
+  computed: {
+    estaLoggeado () {
+      return this.$store.state.isLoggedUser
+    }
+  },
+  methods: {
+
   }
 }
 </script>
