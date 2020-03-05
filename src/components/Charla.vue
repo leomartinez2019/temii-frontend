@@ -7,8 +7,6 @@
         @click="confirmVote(charla)"
         class="far fa-heart fa-2x" :class="{charlaIcon__heart: !escogido}"
       ></i>
-      <!-- TODO: este corazón debe estar activado si -->
-      <!-- la charla escogida ID del usuario es igual a esta charla ID -->
       <i v-else class="fas fa-heart fa-2x"></i>
 
       <div class="charlaIcon__votes">{{ charla.votos }} votos</div>
@@ -29,6 +27,7 @@
 </template>
 
 <script>
+
 import ConfirmTopicModal from './ConfirmTopicModal'
 
 export default {
@@ -47,7 +46,7 @@ export default {
     }
   },
   computed: {
-    // TODO: funcion para mostrar los que han votado ya
+    // TODO: funcion para mostrar los que ya han votado
     votantes () {
       let nombres = ''
       let objs = this.charla.listaVotantes
@@ -66,10 +65,12 @@ export default {
     }
   },
   methods: {
+    // Función para activar el modal
     confirmVote(elem) {
       this.modalShowing = this.escogido ? false : true
       this.clave = elem.id
     },
+    // Guardar la elección en Vuex y firebase
     upVote () {
       this.modalShowing = false
       this.$store.dispatch('escogerCharla', this.clave)
