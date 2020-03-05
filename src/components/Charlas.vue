@@ -1,85 +1,63 @@
 <template>
   <div>
     <div class="charlasContainer">
-      <div class="charlaBox" v-for="(charla, index) in charlas" :key="index">
-        <div class="charlaIcon">
-          <i
-            v-if="charla.upvoted"
-            @click="charla.upvoted = !charla.upvoted"
-            class="fas fa-heart fa-2x"
-          ></i>
-          <i v-else @click="charla.upvoted = !charla.upvoted" class="far fa-heart fa-2x"></i>
-          <div class="charlaIcon__votes">{{ charla.votos }} votos</div>
-        </div>
-        <div class="charlaImg">
-          <div class="charlaImg__box">
-            <img :src="charla.imgUrl" width="115" height="115" alt>
-          </div>
-        </div>
-        <div class="charlaMeta">
-          <div class="charlaMeta__title">{{ charla.titulo }}</div>
-          <div class="charlaMeta__author">{{ charla.usuario }} - {{ charla.fecha_publicacion}}</div>
-        </div>
-      </div>
+      <Charla v-on:upvoted="blockVoting" class="charlaBox" v-for="(charla) in charlados"
+        :charla="charla"
+        :key="charla.id"
+        :charlaSelected="charlaSelected"
+        />
     </div>
   </div>
 </template>
 
 <script>
+
+import Charla from './Charla.vue';
+
 export default {
   name: 'Charlas',
-  data() {
-    return {
-      upvoted: false,
-      charlas: [
-        {
-          titulo: 'Pentesting con Python',
-          fecha_publicacion: '27/03/2019',
-          usuario: 'Rafael Villareal',
-          votos: '20',
-          imgUrl: 'https://imgur.com/veyASfn.png',
-          upvoted: false
-        },
-        {
-          titulo: 'Big Data y Cloud Computing',
-          fecha_publicacion: '27/03/2019',
-          usuario: 'Rafael Villareal',
-          votos: '20',
-          imgUrl: 'https://imgur.com/o96FbDB.png',
-          upvoted: false
-        },
-        {
-          titulo: 'Docker-py',
-          fecha_publicacion: '27/03/2019',
-          usuario: 'Rafael Villareal',
-          votos: '20',
-          imgUrl: 'https://imgur.com/819GxJm.png',
-          upvoted: false
-        },
-        {
-          titulo: 'Pasarela de Pagos',
-          fecha_publicacion: '27/03/2019',
-          usuario: 'Rafael Villareal',
-          votos: '20',
-          imgUrl: 'https://imgur.com/u9iSLfM.png',
-          upvoted: false
-        },
-        {
-          titulo: 'Como usar GraphQL con Django y Flask',
-          fecha_publicacion: '27/03/2019',
-          usuario: 'Rafael Villareal',
-          votos: '20',
-          imgUrl: 'https://imgur.com/40lBxyW.png',
-          upvoted: false
-        }
-      ]
+  components: {
+    Charla
+  },
+  computed: {
+    charlados () {
+      return this.$store.state.charlas
     }
   },
+  created () {
+    this.$store.dispatch('fetchCharlas')
+  },
   methods: {
-    upvote() {
-      this.upvoted = !this.upvoted
+    addtopic () {
+      console.log("getting data...")
+    },
+    blockVoting (elem) {
+      if (this.readyToVote) return;
+      if (confirm("Confirm vote?") === false) {
+        return;
+      }
+      else {
+        this.readyToVote = true;
+        this.dbCharlas.child(elem.id).update(
+          {votos: elem.votos + 1, upvoted: true})
+        let charla = this.charlas.find(charla => charla.id === elem.id);
+        charla.votos++;
+        charla.upvoted = true;
+        this.$emit('validarvote');
+      }
     }
-  }
+  },
+  data() {
+    return {
+      currentUserId: null,
+      dbCharlas: null,
+      charlaSelected: null,
+      upvoted: false,
+      readyToVote: false,
+      charlas: []
+    }
+  },
+
 }
 </script>
 
@@ -100,7 +78,7 @@ export default {
 
 .charlaBox:hover {
   border: 0.5px solid #00a7e1;
-  cursor: pointer;
+  /* cursor: pointer; */
 }
 
 .charlaIcon {
