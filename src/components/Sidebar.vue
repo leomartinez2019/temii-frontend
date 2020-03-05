@@ -40,6 +40,9 @@
 </template>
 
 <script>
+
+import firebase from 'firebase'
+
 import BaseButton from './BaseButton.vue'
 import BaseInput from './BaseInput.vue'
 import BaseTextarea from './BaseTextarea.vue'
@@ -52,20 +55,28 @@ export default {
     BaseTextarea,
     modal
   },
-  data() {
+  data () {
     return {
       showModal: false,
       tema: {
-        titulo: '',
-        descripcion: '',
-        requisitos: ''
+        titulo: "",
+        descripcion: "",
+        requisitos: "No hay requisitos para esta charla",
+        fecha: null,
+        upvoted: false,
+        votos: 0,
+        imgUrl: "https://images.unsplash.com/photo-1485856407642-7f9ba0268b51?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=400&q=60",
+        usuario: "Joe Doe"
       }
     }
   },
   methods: {
-    test() {
+    test () {
+      let today = new Date();
+      this.tema.fecha = today.toLocaleDateString();
       this.showModal = false
-      console.log(this.tema)
+      const db = firebase.database();
+      db.ref('charlas').push().set(this.tema);
       this.$refs.myForm.reset()
     }
   }
@@ -80,7 +91,7 @@ export default {
   flex-direction: column;
   align-items: center;
   box-sizing: border-box;
-  height: 427px;
+  /* height: 427px; */
   width: 271px;
   border: 1px solid #a0bec8;
   border-radius: 10px;
